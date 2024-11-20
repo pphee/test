@@ -46,5 +46,8 @@ func run() error {
 	if err := svr.SetupDB(); err != nil {
 		return err
 	}
+	if err := svr.SetupQdrant(); err != nil {
+		return err
+	}
 	return svr.Start()
 }

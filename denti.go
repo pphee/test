@@ -2,14 +2,21 @@ package main
 
 import (
 	"fmt"
-	"os"
-
 	"github.com/akbaralishaikh/denti/cmd/server"
 	"github.com/akbaralishaikh/denti/pkg/di"
 	"github.com/akbaralishaikh/denti/pkg/logger"
+	"github.com/pphee/test/vendor/github.com/akbaralishaikh/denti/pkg/config"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
+
+type QdrantConfig struct {
+	Host           string
+	ApiKey         string
+	CollectionName string
+	Port           int
+}
 
 func main() {
 	if err := run(); err != nil {
@@ -20,6 +27,11 @@ func main() {
 
 func run() error {
 
+	cfg, err := config.NewConfig()
+	if err != nil {
+		return fmt.Errorf("failed to load configuration: %w", err)
+	}
+
 	g := gin.Default()
 	d := di.BuildContainer()
 
@@ -28,7 +40,8 @@ func run() error {
 		l = log
 	})
 
-	svr := server.NewServer(g, d, l)
+	svr := server.NewServer(g, d, l, cfg)
+
 	svr.MapRoutes()
 	if err := svr.SetupDB(); err != nil {
 		return err

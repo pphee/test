@@ -1,11 +1,11 @@
 package server
 
 import (
-	"github.com/akbaralishaikh/denti/pkg/http/rest"
 	"github.com/akbaralishaikh/denti/pkg/login"
 	"github.com/akbaralishaikh/denti/pkg/user"
-
 	"github.com/gin-gonic/gin"
+	"github.com/pphee/test/pkg/bmi"
+	rest "github.com/pphee/test/pkg/http/rest"
 )
 
 func (ds *dserver) MapRoutes() {
@@ -54,5 +54,15 @@ func (ds *dserver) userRoutes(api *gin.RouterGroup) {
 		userRoutes.GET("/:id", usr.GetByID)
 		userRoutes.PUT("/:id", usr.Update)
 		userRoutes.DELETE("/:id", usr.Delete)
+	}
+}
+
+func (ds *dserver) bmiRoutes(api *gin.RouterGroup) {
+	bmiRoutes := api.Group("/bmi")
+	{
+		var bmiSvc bmi.BmiService
+		b := rest.NewBmiCtrls(bmiSvc)
+		bmiRoutes.POST("/", b.StoreBMI)
+		bmiRoutes.GET("/query", b.QueryBMI)
 	}
 }

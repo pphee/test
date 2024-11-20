@@ -1,8 +1,8 @@
 # Configor
 
-Golang Configuration tool that support YAML, JSON, TOML, Shell Environment
+Golang Configuration tool that support YAML, JSON, TOML, Shell Environment (Supports Go 1.10+)
 
-[![wercker status](https://app.wercker.com/status/9ebd3684ff8998501af5aac38a79a380/s/master "wercker status")](https://app.wercker.com/project/byKey/9ebd3684ff8998501af5aac38a79a380)
+[![test status](https://github.com/jinzhu/configor/workflows/tests/badge.svg?branch=master "test status")](https://github.com/jinzhu/configor/actions)
 
 ## Usage
 
@@ -62,6 +62,26 @@ configor.New(&configor.Config{Debug: true}).Load(&Config, "config.json")
 
 // Enable verbose mode or set env `CONFIGOR_VERBOSE_MODE` to true when running your application
 configor.New(&configor.Config{Verbose: true}).Load(&Config, "config.json")
+```
+
+## Auto Reload Mode
+
+Configor can auto reload configuration based on time
+
+```go
+// auto reload configuration every second
+configor.New(&configor.Config{AutoReload: true}).Load(&Config, "config.json")
+
+// auto reload configuration every minute
+configor.New(&configor.Config{AutoReload: true, AutoReloadInterval: time.Minute}).Load(&Config, "config.json")
+```
+
+Auto Reload Callback
+
+```go
+configor.New(&configor.Config{AutoReload: true, AutoReloadCallback: func(config interface{}) {
+    fmt.Printf("%v changed", config)
+}}).Load(&Config, "config.json")
 ```
 
 # Advanced Usage

@@ -2,6 +2,10 @@ package server
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"strconv"
+	"strings"
 
 	"github.com/akbaralishaikh/denti/pkg/config"
 	"github.com/akbaralishaikh/denti/pkg/logger"
@@ -48,4 +52,25 @@ func (ds *dserver) Start() error {
 		return err
 	}
 	return ds.router.Run(fmt.Sprintf(":%s", cfg.Port))
+}
+
+func (ds *dserver) SetupQdrant() error {
+	var qdrant *qdrant.Client
+	qdrantHost := os.Getenv("QDRANT_HOST")
+	qdrantApiKey := os.Getenv("QDRANT_API_KEY")
+	collectionName := os.Getenv("QDRANT_COLLECTION_NAME")
+	qdrantPort := os.Getenv("QDRANT_PORT")
+
+	if strings.HasPrefix(qdrantHost, "http://") || strings.HasPrefix(qdrantHost, "https://") {
+		qdrantHost = strings.TrimPrefix(qdrantHost, "http://")
+		qdrantHost = strings.TrimPrefix(qdrantHost, "https://")
+	}
+
+	qdrantPortInt, err := strconv.Atoi(qdrantPort)
+	if err != nil {
+		log.Fatalf("Invalid QDRANT_PORT value: %v", err)
+	}
+
+	log.Printf("Connecting to Qdrant at host: %s, port: %d", qdrantHost, qdrantPortInt)
+
 }

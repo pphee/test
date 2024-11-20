@@ -48,3 +48,24 @@ func (ds *dserver) Start() error {
 	}
 	return ds.router.Run(fmt.Sprintf(":%s", cfg.Port))
 }
+
+func (ds *dserver) SetupQdrant() error {
+	qdrantConfig := ds.config.Qdrant
+
+	repo, err := qdrant.NewBMIRepository(
+		qdrantConfig.Host,
+		qdrantConfig.ApiKey,
+		qdrantConfig.CollectionName,
+		qdrantConfig.Port,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create Qdrant repository: %w", err)
+	}
+
+	bmiService := bmi.NewServices(repo)
+	rest.NewBmiCtrls(bmiService)
+
+	log.Printf("Qdrant setup complete: Host=%s, Port=%d, Collection=%s",
+		qdrantConfig.Host, qdrantConfig.Port, qdrantConfig.CollectionName)
+	return nil
+}
